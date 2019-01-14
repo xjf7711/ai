@@ -1,0 +1,59 @@
+.grid-box {
+  border: 1px solid #d9d9d9;
+  overflow-y: scroll;
+}
+
+.row-line {
+  border-bottom: 1px solid #d9d9d9;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.row-active {
+  background-color: #4b0;
+}
+.col-border {
+  border: 1px solid #d9d9d9;
+}
+
+.col-border-left {
+  border-left: 1px solid #d9d9d9;
+}
+
+.col-border-right {
+  border-right: 1px solid #d9d9d9;
+}
+
+.col-border-top {
+  border-top: 1px solid #d9d9d9;
+}
+
+.col-border-bottom {
+  border-bottom: 1px solid #d9d9d9;
+}
+
+.col-padding {
+  padding: 1px;
+}
+.col-padding-top {
+   padding-top: 1px;
+ }
+.padding-left {
+  padding-left: 3px;
+}
+.padding-right {
+  padding-right: 3px;
+}
+
+.van-checkbox {
+  display: inline;
+  //vertical-align: middle;
+}
+.van-radio {
+  display: inline;
+}
+.source-type {
+  vertical-align: middle;
+  line-height: 20px;
+  padding: 1px 0;
+}
