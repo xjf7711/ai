@@ -81,6 +81,12 @@ export default new Router({
           name: "poseNet",
           meta: { title: "姿势分析" },
           component: () => import("@/views/tensorflow/PoseNet")
+        },
+        {
+          path: "guide",
+          name: "guide",
+          meta: { title: "入门指南" },
+          component: () => import("@/views/tensorflow/Guide")
         }
       ]
     }
