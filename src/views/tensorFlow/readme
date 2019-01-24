@@ -1,0 +1,93 @@
+# TensorFlow.js
+
+## 简介
+
+> TensorFlow.js 是一个开源的用于开发机器学习项目的 WebGL-accelerated javascript 库。
+> TensorFlow.js 可以为你提供高性能的、易于使用的机器学习构建模块，允许你在浏览器上训练模型，或以推断模式运行预训练的模型。
+> TensorFlow.js 不仅可以提供低级的机器学习构建模块，还可以提供高级的类似 Keras 的 API 来构建神经网络。
+  
+##  一、张量：tensors
+
+> tensor 是 TensorFlow.js 的数据中心单元：由一组数值组成的一维或多维数组。
+> Tensor 实例的 shape 属性定义了这个数组的形状（例如：数组的每个维度有多少个值）。
+> 最主要的 Tensor 构造函数是 tf.tensor 函数
+
+      // 2x3 Tensor
+      const shape = [2, 3]; // 可以看做是两行三列组成
+      const a = tf.tensor([1.0, 2.0, 3.0, 10.0, 20.0, 30.0], shape);
+      a.print(); 
+      // Output: [[1 , 2 , 3 ],
+      //          [10, 20, 30]]
+      
+      // The shape can also be inferred:
+      const b = tf.tensor([[1.0, 2.0, 3.0], [10.0, 20.0, 30.0]]);
+      b.print();
+      // Output: [[1 , 2 , 3 ],
+      //          [10, 20, 30]]
+      
+
+> 但是，在构建低阶张量时，为了提高代码的可读性，我们推荐使用下列的函数：
+      
+      
+      // 0阶张量，即标量
+      tf.scalar(3.14).print(); // 3.140000104904175， 默认dtype 是 float32
+      tf.scalar(3.14, 'float32').print(); // 3.140000104904175
+      tf.scalar(3.14, 'int32').print(); // 3
+      tf.scalar(3.14, 'bool').print(); // 1
+      
+      // 1阶张量
+      tf.tensor1d([1, 2, 3]).print(); // [1, 2, 3]
+      
+      // 2阶张量
+      // Pass a nested array.
+      tf.tensor2d([[1, 2], [3, 4]]).print();
+      // Pass a flat array and specify a shape.
+      tf.tensor2d([1, 2, 3, 4], [2, 2]).print();
+      // ouput
+      //    [[1, 2],
+      //   [3, 4]]
+      
+      // 3阶张量
+      // Pass a nested array.
+      tf.tensor3d([[[1], [2]], [[3], [4]]]).print();
+      // Pass a flat array and specify a shape.
+      tf.tensor3d([1, 2, 3, 4], [2, 2, 1]).print();
+      // output
+      //    [[[1],
+      //      [2]],
+      
+      //     [[3],
+      //      [4]]]
+      
+      // 4阶张量
+      // Pass a nested array.
+      tf.tensor4d([[[[1], [2]], [[3], [4]]]]).print();
+      // Pass a flat array and specify a shape.
+      tf.tensor4d([1, 2, 3, 4], [1, 2, 2, 1]).print();
+      // output
+      //    [[[[1],
+      //       [2]],
+      
+      //      [[3],
+      //       [4]]]]
+      
+      
+> 上述 5个低阶张量的表示方法，除了 scalar 和 tensor1d 两方法没有 shape 属性外，
+> 其它的都会传入values、shape、dtype 三个参数，注意有无 shape 传入时，values 的表示方式。
+
+> TensorFlow.js 也提供了把 Tensor 实例中的所有元素的值重置为 0 和 1 方法：
+     
+    // 3x5 Tensor with all values set to 0
+    const zeros = tf.zeros([3, 5]);
+    // Output: [[0, 0, 0, 0, 0],
+    //          [0, 0, 0, 0, 0],
+    //          [0, 0, 0, 0, 0]]
+    
+    // 2X2 Tensor with all values set to 1
+    tf.ones([2, 2]).print(); 
+    // output 
+    //     [[1, 1],
+    //     [1, 1]]
+    
+> 在 TensorFlow.js 中，张量值是不可改变的；一旦创建，你就不能改变它的值。
+> 相反，如果你执行 operations（ops） 操作，就可以生成新的张量值。   

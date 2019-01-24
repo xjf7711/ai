@@ -19,7 +19,7 @@ module.exports = {
   // 该对象将会被 webpack-merge 合并入最终的 webpack 配置。
   configureWebpack: {
     // 主要作用就是，不处理应用的某些依赖库，使用externals配置后，依旧可以在代码中通过CMD、AMD或者window/global全局的方式访问。
-    // externals: { BaiduMap: "BMap" } // 有效
+    externals: { AMap: "AMap" } // 有效
   },
   chainWebpack: config => {
     config.resolve.alias
@@ -30,7 +30,7 @@ module.exports = {
       .set("layout", resolve("src/views/layout"))
       .set("base", resolve("src/base"))
       .set("public", resolve("public"));
-    // // 使用 externals.
+    // 使用 externals.
     // config.externals({ BMap: "BMap" });
     // svg rule loader
     const svgRule = config.module.rule("svg"); // 找到svg-loader

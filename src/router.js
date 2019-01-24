@@ -1,7 +1,7 @@
 import Vue from "vue";
 import Router from "vue-router";
-import Home from "./views/Home.vue";
-import Layout from "./views/layout/Layout";
+import Home from "src/views/Home.vue";
+import Layout from "src/views/layout/Layout";
 
 Vue.use(Router);
 
@@ -19,7 +19,13 @@ export default new Router({
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () =>
-        import(/* webpackChunkName: "about" */ "./views/About.vue")
+        import(/* webpackChunkName: "about" */ "src/views/About.vue")
+    },
+    {
+      path: "/gdMap",
+      name: "GDMap",
+      meta: { title: "高德地图" },
+      component: () => import("src/views/GDMap")
     },
     {
       path: "/speech",
@@ -30,7 +36,7 @@ export default new Router({
           path: "tts",
           name: "SpeechTTS",
           meta: { title: "语音合成" },
-          component: () => import("@/views/speech/TTS")
+          component: () => import("src/views/speech/TTS")
         }
       ]
     },
@@ -43,13 +49,13 @@ export default new Router({
           path: "detect",
           name: "FaceDetect",
           meta: { title: "人脸识别" },
-          component: () => import("@/views/face/Detect")
+          component: () => import("src/views/face/Detect")
         },
         {
           path: "match",
           name: "FaceMatch",
           meta: { title: "人脸对比" },
-          component: () => import("@/views/face/Match")
+          component: () => import("src/views/face/Match")
         }
       ]
     },
@@ -59,34 +65,40 @@ export default new Router({
       component: Layout,
       children: [
         {
+          path: "conception",
+          name: "conception",
+          meta: { title: "核心概念" },
+          component: () => import("src/views/tensorFlow/Conception")
+        },
+        {
           path: "regression",
           name: "regression",
           meta: { title: "回归分析" },
-          component: () => import("@/views/tensorflow/Regression")
+          component: () => import("src/views/tensorFlow/Regression")
         },
         {
           path: "operation",
           name: "operation",
           meta: { title: "向量运算" },
-          component: () => import("@/views/tensorflow/Operation")
+          component: () => import("src/views/tensorFlow/Operation")
         },
         {
           path: "fittingCurve",
           name: "fittingCurve",
           meta: { title: "曲线拟合" },
-          component: () => import("@/views/tensorflow/FittingCurve")
+          component: () => import("src/views/tensorFlow/FittingCurve")
         },
-        {
-          path: "poseNet",
-          name: "poseNet",
-          meta: { title: "姿势分析" },
-          component: () => import("@/views/tensorflow/PoseNet")
-        },
+        // {
+        //   path: "poseNet",
+        //   name: "poseNet",
+        //   meta: { title: "姿势分析" },
+        //   component: () => import("src/views/tensorFlow/PoseNet")
+        // },
         {
           path: "guide",
           name: "guide",
           meta: { title: "入门指南" },
-          component: () => import("@/views/tensorflow/Guide")
+          component: () => import("src/views/tensorFlow/Guide")
         }
       ]
     }

@@ -11,6 +11,9 @@ export default {
   data() {
     return {};
   },
+  created() {
+    console.log("Guide created begins. ");
+  },
   mounted() {
     // 学习速率为 0.9 时，迭代 200 次之后找到最小值 -0.16092407703399658。
     // -0.16092410683631897
@@ -104,11 +107,13 @@ export default {
         batchSize: 1,
         epochs: 5000
       });
+      const saveResult = await model.save("indexeddb://my-model-1");
+      console.log("saveResult is ", saveResult);
       model.predict(xs).print();
     }
   }
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 </style>
