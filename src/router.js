@@ -65,16 +65,28 @@ export default new Router({
       component: Layout,
       children: [
         {
+          path: "mobile-net",
+          name: "mobileNet",
+          meta: { title: "mobile-net" },
+          component: () => import("./views/tensorFlow/MobileNet")
+        },
+        {
+          path: "start",
+          name: "start",
+          meta: { title: "开始" },
+          component: () => import("./views/tensorFlow/Start")
+        },
+        {
+          path: "polynomial",
+          name: "polynomial",
+          meta: { title: "多项式" },
+          component: () => import("./views/tensorFlow/Polynomial")
+        },
+        {
           path: "conception",
           name: "conception",
           meta: { title: "核心概念" },
           component: () => import("src/views/tensorFlow/Conception")
-        },
-        {
-          path: "regression",
-          name: "regression",
-          meta: { title: "回归分析" },
-          component: () => import("src/views/tensorFlow/Regression")
         },
         {
           path: "operation",

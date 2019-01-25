@@ -91,3 +91,15 @@
     
 > 在 TensorFlow.js 中，张量值是不可改变的；一旦创建，你就不能改变它的值。
 > 相反，如果你执行 operations（ops） 操作，就可以生成新的张量值。   
+
+
+### ensorflowjs保存并加载tf.Model
+      保存目的地             方案字符串               代码示例
+      本地存储（浏览器）      localstorage://        await model.save('localstorage://my-model-1');
+      IndexedDB（浏览器）   indexeddb://            await model.save('indexeddb://my-model-1');
+      触发文件下载（浏览器）  downloads://            await model.save('downloads://my-model-1');
+      HTTP请求（浏览器）   http:// 要么 https://     await model.save('http://model-server.domain/upload');
+      文件系统（Node.js）   file://                 await model.save('file:///tmp/my-model-1');
+
+      const saveResult = await model.save('localstorage://my-model-1');
+      const model = await tf.loadModel('file:///tmp/my-model-1/model.json');

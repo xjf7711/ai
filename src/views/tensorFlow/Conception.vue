@@ -10,9 +10,9 @@ export default {
     return {};
   },
   mounted() {
-    this.func1();
-    this.func2();
-    this.func3();
+    // this.func1();
+    // this.func2();
+    // this.func3();
   },
   methods: {
     // 最主要的 Tensor 构造函数是 tf.tensor 函数

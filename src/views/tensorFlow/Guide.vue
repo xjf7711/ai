@@ -100,15 +100,17 @@ export default {
       console.log("modelRun begins.  ");
       // 创建两个具有不同非线性激活函数的密集层。
       const xs = tf.tensor2d([[0, 0], [0, 1], [1, 0], [1, 1]]);
-      const ys = tf.tensor2d([[0], [1], [1], [0]]);
-      const model = this.createModel();
-      // 对模型进行 5000 次迭代
-      await model.fit(xs, ys, {
-        batchSize: 1,
-        epochs: 5000
-      });
-      const saveResult = await model.save("indexeddb://my-model-1");
-      console.log("saveResult is ", saveResult);
+      // const ys = tf.tensor2d([[0], [1], [1], [0]]);
+      // const model = this.createModel();
+      // // 对模型进行 5000 次迭代
+      // await model.fit(xs, ys, {
+      //   batchSize: 1,
+      //   epochs: 5000
+      // });
+      // const saveResult = await model.save("indexeddb://my-model-1");
+      // console.log("saveResult is ", saveResult);
+      const model = await tf.loadModel("indexeddb://my-model-1");
+      console.log("model is ", model);
       model.predict(xs).print();
     }
   }
