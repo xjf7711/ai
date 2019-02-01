@@ -22,7 +22,7 @@
 
 <script>
 import { Toast } from "vant";
-import AIClass from "@/api/ai";
+import AIClass from "../../api/AIClass";
 export default {
   name: "speech",
   data() {

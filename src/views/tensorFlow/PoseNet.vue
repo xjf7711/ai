@@ -8,7 +8,10 @@
         <div id="main" style="display:none">
             <video id="video" playsinline="" class="video"></video>
             <canvas id="output"></canvas>
+
         </div>
+        <img id='cat' ref="cat" src='./cat.jpg' width="100%">
+        <!--<img alt="Vue logo" src="../../assets/logo.png">-->
         <div class="footer">
             <div class="footer-text">
                 <p>
@@ -22,28 +25,32 @@
 </template>
 
 <script>
-import * as tf from "@tensorflow/tfjs";
 import * as posenet from "@tensorflow-models/posenet";
+// import * as imgUrl from "../../assets/images/cat.jpg";
 export default {
   name: "PostNet",
   data() {
-    return {};
+    return {
+      // imgUrl: BASE_URL + "cat.jpg"
+    };
   },
   mounted() {
-    this.init();
+    // const imageElement = document.getElementById("cat");
+
+    const pose = this.estimatePoseOnImage(this.$refs.cat);
+
+    console.log("pose is ", pose);
   },
   methods: {
-    async init() {
-      // const net = await posenet.load();
+    async estimatePoseOnImage(imageElement) {
       const imageScaleFactor = 0.5;
-      const flipHorizontal = false;
       const outputStride = 16;
-      const imageElement = document.getElementById("cat");
-      // load the posenet model
+      const flipHorizontal = false;
+      // load the posenet model from a checkpoint
       const net = await posenet.load();
-      const pose = await net.estimateSinglePose(
+      return await net.estimateSinglePose(
         imageElement,
-        scaleFactor,
+        imageScaleFactor,
         flipHorizontal,
         outputStride
       );

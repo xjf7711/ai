@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import AIClass from "../../api/ai.js";
+import AIClass from "../../api/AIClass.js";
 export default {
   name: "Face",
   data() {

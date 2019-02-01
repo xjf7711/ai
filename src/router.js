@@ -29,7 +29,7 @@ export default new Router({
     },
     {
       path: "/speech",
-      name: "AI",
+      name: "speech",
       component: Layout,
       children: [
         {
@@ -64,6 +64,12 @@ export default new Router({
       name: "tensorFlow",
       component: Layout,
       children: [
+        {
+          path: "mnist",
+          name: "mnist",
+          meta: { title: "Mnist" },
+          component: () => import("./views/tensorFlow/Mnist")
+        },
         {
           path: "mobile-net",
           name: "mobileNet",
@@ -100,12 +106,12 @@ export default new Router({
           meta: { title: "曲线拟合" },
           component: () => import("src/views/tensorFlow/FittingCurve")
         },
-        // {
-        //   path: "poseNet",
-        //   name: "poseNet",
-        //   meta: { title: "姿势分析" },
-        //   component: () => import("src/views/tensorFlow/PoseNet")
-        // },
+        {
+          path: "poseNet",
+          name: "poseNet",
+          meta: { title: "姿势分析" },
+          component: () => import("src/views/tensorFlow/PoseNet")
+        },
         {
           path: "guide",
           name: "guide",

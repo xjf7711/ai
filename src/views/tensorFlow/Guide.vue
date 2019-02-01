@@ -112,6 +112,88 @@ export default {
       const model = await tf.loadModel("indexeddb://my-model-1");
       console.log("model is ", model);
       model.predict(xs).print();
+    },
+    async cnnModel() {
+      const model = tf.sequential();
+
+      //create the first layer
+      model.add(
+        tf.layers.conv2d({
+          inputShape: [28, 28, 1],
+          kernelSize: 5,
+          filters: 8,
+          strides: 1,
+          activation: "relu",
+          kernelInitializer: "VarianceScaling"
+        })
+      );
+
+      //create a max pooling layer
+      model.add(
+        tf.layers.maxPooling2d({
+          poolSize: [2, 2],
+          strides: [2, 2]
+        })
+      );
+
+      //create the second conv layer
+      model.add(
+        tf.layers.conv2d({
+          kernelSize: 5,
+          filters: 16,
+          strides: 1,
+          activation: "relu",
+          kernelInitializer: "VarianceScaling"
+        })
+      );
+
+      //create a max pooling layer
+      model.add(
+        tf.layers.maxPooling2d({
+          poolSize: [2, 2],
+          strides: [2, 2]
+        })
+      );
+
+      //flatten the layers to use it for the dense layers
+      model.add(tf.layers.flatten());
+
+      //dense layer with output 10 units
+      model.add(
+        tf.layers.dense({
+          units: 10,
+          kernelInitializer: "VarianceScaling",
+          activation: "softmax"
+        })
+      );
+
+      // const convlayer = tf.layers.conv2d({
+      //   inputShape: [28, 28, 1],
+      //   kernelSize: 5,
+      //   filters: 8,
+      //   strides: 1,
+      //   activation: "relu",
+      //   kernelInitializer: "VarianceScaling"
+      // });
+      //
+      // const input = tf.zeros([1, 28, 28, 1]);
+      // const output = convlayer.apply(input);
+      // const outputSize = Math.floor((inputSize - kernelSize) / stride + 1);
+      // const LEARNING_RATE = 0.0001;
+      // const optimizer = tf.train.adam(LEARNING_RATE);
+      // model.compile({
+      //   optimizer: optimizer,
+      //   loss: "categoricalCrossentropy",
+      //   metrics: ["accuracy"]
+      // });
+      // const batch = tf.zeros([BATCH_SIZE, 28, 28, 1]);
+      // const labels = tf.zeros([BATCH_SIZE, NUM_CLASSES]);
+      //
+      // const h = await model.fit(batch, labels, {
+      //   batchSize: BATCH_SIZE,
+      //   validationData: validationData,
+      //   epochs: BATCH_EPOCHs
+      // });
     }
   }
 };

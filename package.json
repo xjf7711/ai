@@ -20,6 +20,7 @@
   "devDependencies": {
     "@tensorflow-models/posenet": "^0.2.3",
     "@tensorflow/tfjs": "^0.14.2",
+    "@tensorflow/tfjs-vis": "^0.4.2",
     "@vue/cli-plugin-babel": "^3.3.0",
     "@vue/cli-plugin-eslint": "^3.3.0",
     "@vue/cli-plugin-unit-jest": "^3.3.0",
@@ -31,6 +32,7 @@
     "babel-jest": "^23.6.0",
     "eslint": "^5.8.0",
     "eslint-plugin-vue": "^5.0.0",
+    "face-api.js": "^0.18.0",
     "node-sass": "^4.9.0",
     "qs": "^6.6.0",
     "sass-loader": "^7.0.1",
