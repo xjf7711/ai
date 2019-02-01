@@ -1,11 +1,15 @@
 <template>
     <div>
         {{message}}
+        <img id="myImg" src="/images/example.png" />
+        <video id="myVideo" src="/media/example.mp4" />
+        <canvas id="myCanvas" />
     </div>
 </template>
 
 <script>
 import * as faceapi from "face-api.js";
+import * as canvas from "canvas";
 export default {
   name: "recognization",
   data() {
@@ -19,6 +23,7 @@ export default {
       const MODEL_URL = "/models";
       await faceapi.loadModels(MODEL_URL);
       const minConfidence = 0.8;
+      const input = document.getElementById("myImg");
       const fullFaceDescriptions = await faceapi.allFaces(input, minConfidence);
       const resized = fullFaceDescriptions.map(fd => fd.forSize(width, height));
       fullFaceDescriptions.forEach((fd, i) => {
