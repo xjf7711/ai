@@ -32,7 +32,7 @@ module.exports = {
       .set("public", resolve("public"));
     // 使用 externals.
     // config.externals({ BMap: "BMap" });
-    // svg rule loader
+    // svg rule loader 使用svg-sprite-loader加载svg文件。
     const svgRule = config.module.rule("svg"); // 找到svg-loader
     svgRule.uses.clear(); // 清除已有的loader, 如果不这样做会添加在此loader之后
     svgRule.exclude.add(/node_modules/); // 正则匹配排除node_modules目录

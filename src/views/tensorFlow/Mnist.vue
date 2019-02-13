@@ -1,37 +1,39 @@
 <template>
     <div>
-        <section class='title-area'>
-            <h1>TensorFlow.js: Digit Recognizer with Layers</h1>
-            <p class='subtitle'>Train a model to recognize handwritten digits from the MNIST database using the tf.layers
-                api.
-            </p>
-        </section>
+        <!--<section class='title-area'>-->
+            <!--<h1>TensorFlow.js: Digit Recognizer with Layers</h1>-->
+            <!--<p class='subtitle'>Train a model to recognize handwritten digits from the MNIST database using the tf.layers-->
+                <!--api.-->
+            <!--</p>-->
+        <!--</section>-->
 
-        <section>
-            <p class='section-head'>Description</p>
-            <p>
-                This examples lets you train a handwritten digit recognizer using either a Convolutional Neural Network
-                (also known as a ConvNet or CNN) or a Fully Connected Neural Network (also known as a DenseNet).
-            </p>
-            <p>The MNIST dataset is used as training data.</p>
-        </section>
+        <!--<section>-->
+            <!--<p class='section-head'>Description</p>-->
+            <!--<p>-->
+                <!--This examples lets you train a handwritten digit recognizer using either a Convolutional Neural Network-->
+                <!--(also known as a ConvNet or CNN) or a Fully Connected Neural Network (also known as a DenseNet).-->
+            <!--</p>-->
+            <!--<p>The MNIST dataset is used as training data.</p>-->
+        <!--</section>-->
 
         <section>
             <p class='section-head'>Training Parameters</p>
             <div>
                 <label>Model Type:</label>
-                <select id="model-type" v-model="modelType" :disabled="isDisabled">
+                <label for="model-type"></label><select id="model-type" v-model="modelType" :disabled="isDisabled">
                     <option>ConvNet</option>
                     <option>DenseNet</option>
                 </select>
             </div>
 
             <div>
-                <label># of training epochs:</label>
-                <input id="train-epochs" v-model="trainEpochs">
+                <!--<label># of training epochs:</label>-->
+                <!--<input id="train-epochs" v-model="trainEpochs">-->
+                <van-field label="epochs: " v-model="trainEpochs"></van-field>
             </div>
 
-            <button id="train" @click="handlerTrain" :disabled="isDisabled">Load Data and Train Model</button>
+            <!--<button id="train" @click="handlerTrain" :disabled="isDisabled">Load Data and Train Model</button>-->
+            <van-button type="primary" @click="handlerTrain" :disabled="isDisabled">Load Data and Train Model</van-button>
         </section>
 
         <section>

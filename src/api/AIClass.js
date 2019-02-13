@@ -1,10 +1,9 @@
 /**
- * ai接口
- *
+ * 百度AI接口
  * */
 
 import qs from "qs";
-import fetch from "@/assets/js/fetch";
+import fetch from "../assets/js/fetch";
 
 export default class AIClass {
   constructor() {
@@ -176,12 +175,16 @@ export default class AIClass {
     // reader.readAsDataURL(file);
   }
 
-  // 图片中包含人脸数： 1
-  // 图片中包含人物年龄： 22
-  // 图片中包含人物颜值评分： 77.99679565
-  // 图片中包含人物性别： female
-  // 图片中包含人物种族： yellow
-  // 图片中包含人物表情： smile
+  /**
+   * 人脸识别
+   * 图片中包含人脸数： 1
+   * 图片中包含人物年龄： 22
+   * 图片中包含人物颜值评分： 77.99679565
+   * 图片中包含人物性别： female
+   * 图片中包含人物种族： yellow
+   * 图片中包含人物表情： smile
+   * @param img_base64
+   */
   static detectFace(img_base64) {
     const data = {
       image: img_base64, //"027d8308a2ec665acb1bdf63e513bcb9",
@@ -206,6 +209,10 @@ export default class AIClass {
     });
   }
 
+  /**
+   * 人脸匹配
+   * @param imgList
+   */
   static matchFace(imgList) {
     const data = [
       {

@@ -1,15 +1,15 @@
 <template>
     <div>
-        <section class='title-area'>
-            <h1>TensorFlow.js: Polynomial Regression</h1>
-            <p class='subtitle'>Train a model to predict y-values for a cubic equation using a single layer perceptron</p>
-        </section>
+        <!--<section class='title-area'>-->
+            <!--<h1>TensorFlow.js: Polynomial Regression</h1>-->
+            <!--<p class='subtitle'>Train a model to predict y-values for a cubic equation using a single layer perceptron</p>-->
+        <!--</section>-->
 
-        <section>
-            <p class="section-head">Description</p>
-            <p>This model learns to generate a curve to match a polynomial equation. It uses a single layer perceptron with 4
-                weights.</p>
-        </section>
+        <!--<section>-->
+            <!--<p class="section-head">Description</p>-->
+            <!--<p>This model learns to generate a curve to match a polynomial equation. It uses a single layer perceptron with 4-->
+                <!--weights.</p>-->
+        <!--</section>-->
 
         <section>
             <p class="section-head">Data Generation</p>
@@ -43,7 +43,7 @@
             <p class="section-head">Model Output</p>
             <p>We plot a curve using y-coordinate predictions the model has learned to make for each x-coordinate.</p>
             <div>
-                <canvas id="canvas"></canvas>
+                <canvas id="canvas" ref="canvas"></canvas>
             </div>
         </section>
     </div>
@@ -71,7 +71,7 @@ export default {
     };
   },
   mounted() {
-    this.canvas = document.getElementById("canvas");
+    // this.canvas = document.getElementById("canvas");
     // const cubicCoeffElement = document.getElementById("cubic-coeff");
     // const quadCoeffElement = document.getElementById("quad-coeff");
     // const linearCoeffElement = document.getElementById("linear-coeff");
@@ -87,7 +87,6 @@ export default {
     //
     // epochsElement.addEventListener("keyup", fitAndRender);
     // learningRateElement.addEventListener("keyup", fitAndRender);
-
     // this.fitAndRender();
   },
   methods: {
@@ -105,8 +104,8 @@ export default {
         +this.constCoeff
       ];
       console.log("True coefficients: " + JSON.stringify(coeffs));
-      let xyData = generateXYData(this.canvas, coeffs);
-      drawXYData(this.canvas, xyData);
+      let xyData = generateXYData(this.$refs.canvas, coeffs);
+      drawXYData(this.$refs.canvas, xyData);
       const fitOutputs = await fitModel(
         xyData,
         epochs,
@@ -119,7 +118,7 @@ export default {
       const yMean = fitOutputs[3];
       const yStddev = fitOutputs[4];
       await renderModelPredictions(
-        this.canvas,
+        this.$refs.canvas,
         this.order,
         model,
         xPowerMeans,

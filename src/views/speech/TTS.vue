@@ -1,7 +1,7 @@
 <template>
     <van-cell-group>
         <van-field label="文字内容" required clearable
-                   v-model='words' placeholder="请输入要合成的文字"/>
+                   v-model='words' placeholder="请输入要合成的文字"></van-field>
         <!--<button @click='tts'>合成</button>-->
         <!--<button @click='play' id='playBtn'>准备中</button>-->
         <!--<button @click='pause'>暂停</button>-->
@@ -12,7 +12,7 @@
         <audio display="block" autoplay controls :src=audioUrl></audio>
         <br>
         <van-uploader accept="file" :after-read="getFile">
-            <van-button text="上传文件" type="primary" />
+            <van-button text="上传文件" type="primary" ></van-button>
         </van-uploader>
         <van-tag type="danger" v-if="audioText">
             {{audioText}}
