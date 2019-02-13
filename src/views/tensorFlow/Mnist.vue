@@ -27,13 +27,13 @@
             </div>
 
             <div>
-                <!--<label># of training epochs:</label>-->
-                <!--<input id="train-epochs" v-model="trainEpochs">-->
-                <van-field label="epochs: " v-model="trainEpochs"></van-field>
+                <label># of training epochs:</label>
+                <input id="train-epochs" v-model="trainEpochs">
+                <!--<van-field label="epochs: " v-model="trainEpochs"></van-field>-->
             </div>
 
-            <!--<button id="train" @click="handlerTrain" :disabled="isDisabled">Load Data and Train Model</button>-->
-            <van-button type="primary" @click="handlerTrain" :disabled="isDisabled">Load Data and Train Model</van-button>
+            <button id="train" @click="handlerTrain" :disabled="isDisabled">Load Data and Train Model</button>
+            <!--<van-button type="primary" @click="handlerTrain" :disabled="isDisabled">Load Data and Train Model</van-button>-->
         </section>
 
         <section>

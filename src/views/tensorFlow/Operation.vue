@@ -214,5 +214,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "../../assets/styles/grid.scss";
+@import "../../styles/grid.scss";
 </style>

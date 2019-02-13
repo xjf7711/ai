@@ -7,7 +7,7 @@ import "normalize.css";
 
 import Vant from "vant";
 import "vant/lib/index.css";
-import "./assets/styles/vant.scss";
+import "./styles/vant.scss";
 // vant Icon 组件默认引用 yzcdn.cn 域名下的字体文件，
 // 如果想要使用本地字体文件，请引入下面的 css 文件
 import "vant/lib/icon/local.css";

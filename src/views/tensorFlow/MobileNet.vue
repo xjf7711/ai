@@ -4,17 +4,17 @@
             <h1>TensorFlow.js: Using a pretrained MobileNet</h1>
         </section>
 
-        <section>
-            <p class='section-head'>Description</p>
-            <p>
-                This demo uses the pretrained MobileNet_25_224 model from Keras which you can find
-                <a href="https://github.com/fchollet/deep-learning-models/releases/download/v0.6/mobilenet_2_5_224_tf.h5">here</a>.
+        <!--<section>-->
+            <!--<p class='section-head'>Description</p>-->
+            <!--<p>-->
+                <!--This demo uses the pretrained MobileNet_25_224 model from Keras which you can find-->
+                <!--<a href="https://github.com/fchollet/deep-learning-models/releases/download/v0.6/mobilenet_2_5_224_tf.h5">here</a>.-->
 
-                It is not trained to recognize human faces. For best performance, upload images of objects
-                like piano, coffee mugs, bottles, etc. You can see all the objects types it has been trained to recognize in <a
-                    href="https://github.com/tensorflow/tfjs-examples/blob/master/mobilenet/imagenet_classes.js">imagenet_classes.js</a>.
-            </p>
-        </section>
+                <!--It is not trained to recognize human faces. For best performance, upload images of objects-->
+                <!--like piano, coffee mugs, bottles, etc. You can see all the objects types it has been trained to recognize in <a-->
+                    <!--href="https://github.com/tensorflow/tfjs-examples/blob/master/mobilenet/imagenet_classes.js">imagenet_classes.js</a>.-->
+            <!--</p>-->
+        <!--</section>-->
         <section>
             <p class='section-head'>Model Output</p>
             <div id="file-container">
@@ -85,10 +85,11 @@ export default {
     },
     async mobilenetDemo() {
       Toast.loading({
+        mask: true,
         duration: 0, // 持续展示 toast
         forbidClick: true, // 禁用背景点击
         loadingType: "spinner",
-        message: "Loading model ..."
+        message: "Loading \n model..."
       });
       // mobilenet = await tf.loadModel(MOBILENET_MODEL_PATH);
       // mobilenet.save("indexeddb://mobilenet");
@@ -150,7 +151,7 @@ export default {
       console.log("classes is ", classes);
       this.predictions.unshift(classes);
       const totalTime = performance.now() - startTime;
-      Toast.success(`Done in ${Math.floor(totalTime)} ms`);
+      Toast.success(`Done in \n ${Math.floor(totalTime)} ms`);
     },
 
     /**
@@ -190,4 +191,11 @@ export default {
 </script>
 
 <style scoped>
+.toast {
+  width: 300px;
+}
+.mobile-net >>> .van-toast--default {
+  min-width: 120px;
+  max-width: 300px;
+}
 </style>

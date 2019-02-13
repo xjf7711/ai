@@ -138,7 +138,7 @@ export class MnistData {
   /**
    * Get all test data as a data tensor a a labels tensor.
    *
-   * @param {number,null} numExamples Optional number of examples to get. If not
+   * @param {number} numExamples Optional number of examples to get. If not
    *     provided,
    *   all test examples will be returned.
    * @returns
@@ -146,7 +146,7 @@ export class MnistData {
    *   labels: The one-hot encoded labels tensor, of shape
    *     `[numTestExamples, 10]`.
    */
-  getTestData(numExamples = null) {
+  getTestData(numExamples) {
     let xs = tf.tensor4d(this.testImages, [
       this.testImages.length / IMAGE_SIZE,
       IMAGE_H,
