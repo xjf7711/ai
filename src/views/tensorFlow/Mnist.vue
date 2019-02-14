@@ -194,7 +194,7 @@ export default {
       const totalNumBatches =
         Math.ceil((trainData.xs.shape[0] * (1 - validationSplit)) / batchSize) *
         this.trainEpochs;
-
+      console.log("totalNumBatches is ", totalNumBatches);
       // During the long-running fit() call for model training, we include
       // callbacks, so that we can plot the loss and accuracy values in the page
       // as the training progresses.

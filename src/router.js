@@ -60,6 +60,19 @@ export default new Router({
       ]
     },
     {
+      path: "/fingerprint",
+      name: "fingerprint",
+      component: Layout,
+      children: [
+        {
+          path: "index",
+          name: "fingerprintIndex",
+          meta: { title: "指纹" },
+          component: () => import("./views/fingerprint/Index")
+        }
+      ]
+    },
+    {
       path: "/tensorFlow",
       name: "tensorFlow",
       component: Layout,

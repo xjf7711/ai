@@ -24,7 +24,7 @@ const NUM_CLASSES = 10;
 const NUM_DATASET_ELEMENTS = 65000;
 
 const NUM_TRAIN_ELEMENTS = 55000;
-const NUM_TEST_ELEMENTS = NUM_DATASET_ELEMENTS - NUM_TRAIN_ELEMENTS;
+// const NUM_TEST_ELEMENTS = NUM_DATASET_ELEMENTS - NUM_TRAIN_ELEMENTS;
 
 const MNIST_IMAGES_SPRITE_PATH =
   "https://storage.googleapis.com/learnjs-data/model-builder/mnist_images.png";
@@ -43,7 +43,7 @@ export class MnistData {
     const img = new Image();
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
-    const imgRequest = new Promise((resolve, reject) => {
+    const imgRequest = new Promise(resolve => {
       img.crossOrigin = "";
       img.onload = () => {
         img.width = img.naturalWidth;
@@ -91,10 +91,7 @@ export class MnistData {
     });
 
     const labelsRequest = fetch(MNIST_LABELS_PATH);
-    const [imgResponse, labelsResponse] = await Promise.all([
-      imgRequest,
-      labelsRequest
-    ]);
+    const [, labelsResponse] = await Promise.all([imgRequest, labelsRequest]);
 
     this.datasetLabels = new Uint8Array(await labelsResponse.arrayBuffer());
 
