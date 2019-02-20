@@ -189,8 +189,10 @@ export default {
       let trainBatchCount = 0;
 
       const trainData = this.data.getTrainData();
+      console.log("trainData  is ", trainData);
       const testData = this.data.getTestData();
-
+      console.log("testData  is ", testData);
+      console.log("trainData.xs.shape[0] is ", trainData.xs.shape[0]);
       const totalNumBatches =
         Math.ceil((trainData.xs.shape[0] * (1 - validationSplit)) / batchSize) *
         this.trainEpochs;
@@ -199,6 +201,9 @@ export default {
       // callbacks, so that we can plot the loss and accuracy values in the page
       // as the training progresses.
       let valAcc;
+      console.log("model.fit begins. ");
+      console.log("trainData.xs is ", trainData.xs);
+      console.log("trainData.labels is ", trainData.labels)
       await model.fit(trainData.xs, trainData.labels, {
         batchSize,
         validationSplit,

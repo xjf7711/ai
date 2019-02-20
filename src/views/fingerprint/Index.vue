@@ -46,10 +46,14 @@
 
 <script>
 import * as tf from "@tensorflow/tfjs";
+import * as tfvis from "@tensorflow/tfjs-vis";
+
 import { Toast } from "vant";
 import { strToHexToArray } from "../../assets/js/parseNumber";
 import { fingerprints } from "./train.js";
 import { fingerprints as testData } from "./test.js";
+const lossValues = [[], []];
+const accuracyValues = [[], []];
 export default {
   name: "Fingerprint",
   data() {
@@ -59,37 +63,68 @@ export default {
       data: null,
       lossLabel: null,
       accuracyLabel: null,
-      modelType: "ConvNet",
-      trainEpochs: 3,
+      modelType: "ConvNet", // DenseNet,ConvNet
+      trainEpochs: 100,
       trainData: {},
       testData: {},
-      examples: {}
+      examples: {},
+      labels: [],
+      labelSize: 43
     };
   },
   created() {
-    console.log(fingerprints);
+    console.log("created begins. ");
+    this.formatLabels();
     this.trainData = this.loadData(fingerprints);
+    console.log("trainData is ", this.trainData);
     this.testData = this.loadData(testData);
   },
   mounted() {
     // this.handlerTrain();
   },
   methods: {
+    formatLabels() {
+      const labels = [];
+      fingerprints.forEach(item => {
+        const uid = parseInt(item.user_sn);
+        labels.push(uid);
+      });
+      const labelSet = new Set(labels);
+      console.log("labelSet is ", labelSet);
+      const labelArray = tf.tensor1d(Array.from(labelSet), "int32");
+      console.log("labelArray is ", labelArray.dataSync());
+      const oneHots = tf.oneHot(labelArray, 43);
+      console.log("oneHots is ", oneHots.dataSync());
+      Array.from(labelSet).forEach((item, index) => {
+        const label = new Array(this.labelSize).fill(0, 0, this.labelSize);
+        label[index] = 1;
+        this.labels[item] = label;
+      });
+      // console.log("this.labels is ", this.labels);
+    },
     loadData(fingerprints) {
       const xs = [];
       const labels = [];
       fingerprints.forEach(item => {
-        const feature = [
-          ...strToHexToArray(item.features),
-          ...[0, 0, 0, 0, 0, 0]
-        ];
+        // console.log("fingerprints begins.");
+        // console.log(index, "index ");
+        const feature = strToHexToArray(item.features.substr(0, 384));
         xs.push(feature);
-        labels.push(Number(item.user_sn));
+        const uid = parseInt(item.user_sn);
+        // // console.log("uid is ",typeof uid);
+        const label = this.labels[uid];
+        // console.log("label is ", label);
+        labels.push(label);
       });
-      console.log("data is ", xs);
-      console.log("labels is ", labels);
-      // console.log(new Set(labels)); // 22 train
-      return { xs: tf.tensor(xs), labels: tf.tensor(labels) };
+      // console.log("xs is ", xs);
+      // console.log("labels is ", labels);
+      // console.log("xs is  ", xs);
+      // console.log("tf.tensor2d(xs).reshape([-1, 16, 24, 1]) is ", tf.tensor2d(xs).reshape([-1, 16, 24, 1]).dataSync());
+      // const xsReshape = tf.tensor(xs).reshape([-1, 16, 24, 1]);
+      return {
+        xs: tf.tensor2d(xs).reshape([-1, 16, 24, 1]),
+        labels: tf.tensor(labels)
+      };
     },
     async handlerTrain() {
       console.log("handlerTrain begins.");
@@ -118,18 +153,18 @@ export default {
         message: "Training model..."
       });
       const optimizer = "rmsprop";
-
+      console.log("model.compile begins . ");
       model.compile({
         optimizer,
         loss: "categoricalCrossentropy",
         metrics: ["accuracy"]
       });
 
-      const batchSize = 30;
+      const batchSize = 50;
 
       // Leave out the last 15% of the training data for validation, to monitor
       // overfitting during training.
-      const validationSplit = 0.25;
+      const validationSplit = 0.15;
 
       let trainBatchCount = 0;
 
@@ -137,23 +172,28 @@ export default {
       // const testData = this.data.getTestData();
 
       const totalNumBatches =
-        Math.ceil((120 * (1 - validationSplit)) / batchSize) * this.trainEpochs;
-      console.log(totalNumBatches);
+        Math.ceil(
+          (this.trainData.xs.shape[0] * (1 - validationSplit)) / batchSize
+        ) * this.trainEpochs;
+      console.log("totalNumBatches is ", totalNumBatches);
       // During the long-running fit() call for model training, we include
       // callbacks, so that we can plot the loss and accuracy values in the page
       // as the training progresses.
       let valAcc;
+      console.log("model.fit begins. ");
       // await model.fit(trainData.xs, trainData.labels, {
+      console.log("train this.trainData.xs is ", this.trainData.xs);
       await model.fit(this.trainData.xs, this.trainData.labels, {
         batchSize,
         validationSplit,
         epochs: this.trainEpochs,
         callbacks: {
           onBatchEnd: async (batch, logs) => {
+            console.log("callbacks onBatchEnd.");
             trainBatchCount++;
 
-            // this.plotLoss(trainBatchCount, logs.loss, "train");
-            // this.plotAccuracy(trainBatchCount, logs.acc, "train");
+            this.plotLoss(trainBatchCount, logs.loss, "train");
+            this.plotAccuracy(trainBatchCount, logs.acc, "train");
             Toast.loading({
               duration: 0,
               forbidClick: true,
@@ -169,9 +209,10 @@ export default {
             await tf.nextFrame();
           },
           onEpochEnd: async (epoch, logs) => {
+            console.log("callbacks onEpochEnd.");
             valAcc = logs.val_acc;
-            // this.plotLoss(trainBatchCount, logs.val_loss, "validation");
-            // this.plotAccuracy(trainBatchCount, logs.val_acc, "validation");
+            this.plotLoss(trainBatchCount, logs.val_loss, "validation");
+            this.plotAccuracy(trainBatchCount, logs.val_acc, "validation");
             if (onIteration) {
               onIteration("onEpochEnd", epoch, logs);
             }
@@ -181,6 +222,7 @@ export default {
       });
       model.save("indexeddb://fingerprints");
       this.isDisabled = false;
+      console.log("testResult begins. ");
       const testResult = model.evaluate(this.testData.xs, this.testData.labels);
       // const testResult = model.evaluate(testData.xs, testData.labels);
       const testAccPercent = testResult[1].dataSync()[0] * 100;
@@ -194,6 +236,7 @@ export default {
         `Final validation accuracy: ${finalValAccPercent.toFixed(1)}%; ` +
           `Final test accuracy: ${testAccPercent.toFixed(1)}%`
       );
+      console.log("testAccPercent is ", testAccPercent.toFixed(1));
     },
 
     /**
@@ -201,43 +244,48 @@ export default {
      * @returns {tf.Model} An instance of tf.Model.
      */
     createConvModel() {
+      console.log("createConvModel begins. ");
       const model = tf.sequential();
-      model.add(
-        tf.layers.conv2d({
-          inputShape: [14, 28, 1],
-          kernelSize: 3,
-          filters: 16,
-          activation: "relu"
-        })
-      );
-      model.add(tf.layers.maxPooling2d({ poolSize: 2, strides: 2 }));
+      console.log("conv2d begins. ");
+      const conv1 = tf.layers.conv2d({
+        inputShape: [16, 24, 1],
+        kernelSize: 3,
+        filters: 16,
+        activation: "relu"
+      });
+      model.add(conv1);
+      // model.add(tf.layers.maxPooling2d({ poolSize: 2, strides: 2 }));
       // Our third layer is another convolution, this time with 32 filters.
       model.add(
         tf.layers.conv2d({ kernelSize: 3, filters: 32, activation: "relu" })
       );
 
       // // Max pooling again.
-      // model.add(tf.layers.maxPooling2d({ poolSize: 2, strides: 2 }));
-      //
-      // // Add another conv2d layer.
-      // model.add(
-      //   tf.layers.conv2d({ kernelSize: 3, filters: 32, activation: "relu" })
-      // );
+      model.add(tf.layers.maxPooling2d({ poolSize: 2, strides: 2 }));
 
+      // Add another conv2d layer.
+      model.add(
+        tf.layers.conv2d({ kernelSize: 3, filters: 64, activation: "relu" })
+      );
+      console.log("flatten begins. ");
       model.add(tf.layers.flatten({}));
-
-      model.add(tf.layers.dense({ units: 64, activation: "relu" }));
-
-      model.add(tf.layers.dense({ units: 22, activation: "softmax" }));
+      console.log("relu begins. ");
+      model.add(tf.layers.dense({ units: 128, activation: "relu" }));
+      console.log("softmax begins.");
+      model.add(tf.layers.dense({ units: 43, activation: "softmax" }));
 
       return model;
     },
 
     createDenseModel() {
       const model = tf.sequential();
-      model.add(tf.layers.flatten({ inputShape: [28, 14, 1] }));
-      model.add(tf.layers.dense({ units: 42, activation: "relu" }));
-      model.add(tf.layers.dense({ units: 10, activation: "softmax" }));
+      model.add(tf.layers.flatten({ inputShape: [16, 24, 1] }));
+      // model.add(tf.layers.dense({ units: 1155, activation: "relu" }));
+      // model.add(tf.layers.dense({ units: 55, activation: "relu" }));
+      model.add(tf.layers.dense({ units: 155, activation: "relu" }));
+      model.add(
+        tf.layers.dense({ units: this.labelSize, activation: "softmax" })
+      );
       return model;
     },
 
@@ -254,15 +302,17 @@ export default {
       tf.tidy(() => {
         // const output = model.predict(examples.xs);
         const output = model.predict(this.testData.xs);
+        console.log("output is ", output);
         const axis = 1;
         const labels = Array.from(this.testData.labels.argMax(axis).dataSync());
+        console.log("tf.tidy labels is ", labels);
         const predictions = Array.from(output.argMax(axis).dataSync());
-
+        console.log("tf.tidy predictions is ", predictions);
         this.showTestResults(this.testData, predictions, labels);
       });
     },
     draw(image, canvas) {
-      const [width, height] = [14, 28];
+      const [width, height] = [16, 24];
       canvas.width = width;
       canvas.height = height;
       const ctx = canvas.getContext("2d");
@@ -334,6 +384,41 @@ export default {
 
         imagesElement.appendChild(div);
       }
+    },
+    plotLoss(batch, loss, set) {
+      const series = set === "train" ? 0 : 1;
+      lossValues[series].push({ x: batch, y: loss });
+      const lossContainer = document.getElementById("loss-canvas");
+      tfvis.render.linechart(
+        { values: lossValues, series: ["train", "validation"] },
+        lossContainer,
+        {
+          xLabel: "Batch #",
+          yLabel: "Loss",
+          width: 400,
+          height: 300
+        }
+      );
+      this.lossLabel = `last loss: ${loss.toFixed(3)}`;
+    },
+    plotAccuracy(batch, accuracy, set) {
+      const accuracyContainer = document.getElementById("accuracy-canvas");
+      const series = set === "train" ? 0 : 1;
+      accuracyValues[series].push({ x: batch, y: accuracy });
+      tfvis.render.linechart(
+        {
+          values: accuracyValues,
+          series: ["train", "validation"]
+        },
+        accuracyContainer,
+        {
+          xLabel: "Batch #",
+          yLabel: "Loss",
+          width: 400,
+          height: 300
+        }
+      );
+      this.accuracyLabel = `last accuracy: ${(accuracy * 100).toFixed(1)}%`;
     }
   }
 };
