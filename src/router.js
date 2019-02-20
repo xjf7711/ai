@@ -69,6 +69,12 @@ export default new Router({
           name: "fingerprintIndex",
           meta: { title: "指纹" },
           component: () => import("./views/fingerprint/Index")
+        },
+        {
+          path: "dense-net",
+          name: "denseNet",
+          meta: { title: "深度神经网络" },
+          component: () => import("./views/fingerprint/DenseNet")
         }
       ]
     },
@@ -77,6 +83,18 @@ export default new Router({
       name: "tensorFlow",
       component: Layout,
       children: [
+        {
+          path: "addition-rnn",
+          name: "additionRnn",
+          meta: { title: "additionRnn" },
+          component: () => import("./views/tensorFlow/addition-rnn/Index.vue")
+        },
+        {
+          path: "boston-housing",
+          name: "bostonHousing",
+          meta: { title: "bostonHousing" },
+          component: () => import("./views/tensorFlow/boston-housing/Index.vue")
+        },
         {
           path: "mnist",
           name: "mnist",
