@@ -56,12 +56,12 @@ export default {
     console.log("created begins. ");
   },
   mounted() {
-    this.fingerprint = new Fingerprint(this.modelType, this.trainEpochs);
-    this.fingerprint.start();
   },
   methods: {
     async handlerTrain() {
       console.log("handlerTrain begins.");
+      this.fingerprint = new Fingerprint(this.modelType, this.trainEpochs);
+      this.fingerprint.start();
       this.isDisabled = true;
       this.fingerprint.handlerTrain();
     }

@@ -5,22 +5,24 @@ import { fingerprints as trainData } from "./train.js";
 import { fingerprints as testData } from "./test.js";
 import { strToHexToArray } from "../../assets/js/parseNumber";
 
+const HEIGH = 16;
+const WIDTH = 16;
+const SIZE = 43;
 const lossValues = [[], []];
 const accuracyValues = [[], []];
 
 export default class Fingerprint {
   constructor(modelType, trainEpochs) {
-    this.labels = [];
-    this.labelSize = 43;
+    this.modelType = modelType; // DenseNet,ConvNet
+    this.trainEpochs = trainEpochs;
+    // this.featureLength = 256;
+    this.labels = {};
     // lossLabel: null,
     // accuracyLabel: null,
-    this.modelType = modelType;// DenseNet,ConvNet
-    this.trainEpochs = trainEpochs;
     //   trainData: {},
     // testData: {},
     // examples: {},
     // labels: [],
-
   }
   start() {
     this.formatLabels(trainData);
@@ -41,12 +43,12 @@ export default class Fingerprint {
     });
     const labelSet = new Set(labels);
     console.log("labelSet is ", labelSet);
-    const labelArray = tf.tensor1d(Array.from(labelSet), "int32");
-    console.log("labelArray is ", labelArray.dataSync());
-    Array.from(labelSet).forEach((item, index) => {
-      const label = new Array(this.labelSize).fill(0, 0, this.labelSize);
-      // const label = tf.oneHot(item, this.labelSize);
-      // console.log("tf.oneHot ", tf.oneHot(item, this.labelSize).dataSync());
+    this.labelArray = Array.from(labelSet);
+    console.log("labelArray is ", this.labelArray);
+    this.labelArray.forEach((item, index) => {
+      const label = new Array(SIZE).fill(0, 0, SIZE);
+      // const label = tf.oneHot(item, SIZE);
+      // console.log("tf.oneHot ", tf.oneHot(item, SIZE).dataSync());
       label[index] = 1;
       // console.log("label is ", label.dataSync());
       this.labels[item] = label;
@@ -59,7 +61,7 @@ export default class Fingerprint {
     fingerprints.forEach(item => {
       // console.log("fingerprints begins.");
       // console.log(index, "index ");
-      const feature = strToHexToArray(item.features.substr(0, 384));
+      const feature = strToHexToArray(item.features.substr(0,HEIGH*WIDTH));
       xs.push(feature);
       const uid = parseInt(item.user_sn);
       // // console.log("uid is ",typeof uid);
@@ -67,12 +69,12 @@ export default class Fingerprint {
       // console.log("loadData label is ", label);
       labels.push(label);
     });
-    // console.log("xs is ", xs);
+    console.log("xs is ", xs);
     console.log("loadData labels is ", labels);
-    // console.log("tf.tensor2d(xs).reshape([-1, 16, 24, 1]) is ", tf.tensor2d(xs).reshape([-1, 16, 24, 1]).dataSync());
-    // const xsReshape = tf.tensor(xs).reshape([-1, 16, 24, 1]);
+    // console.log("tf.tensor2d(xs).reshape([-1, HEIGH, WIDTH, 1]) is ", tf.tensor2d(xs).reshape([-1, HEIGH, WIDTH, 1]).dataSync());
+    // const xsReshape = tf.tensor(xs).reshape([-1, HEIGH, WIDTH, 1]);
     return {
-      xs: tf.tensor2d(xs).reshape([-1, 16, 24, 1]),
+      xs: tf.tensor2d(xs).reshape([-1, HEIGH, WIDTH, 1]),
       labels: tf.tensor2d(labels)
     };
   }
@@ -183,7 +185,7 @@ export default class Fingerprint {
     Toast.clear();
     Toast(
       `Final validation accuracy: ${finalValAccPercent.toFixed(1)}%; ` +
-      `Final test accuracy: ${testAccPercent.toFixed(1)}%`
+        `Final test accuracy: ${testAccPercent.toFixed(1)}%`
     );
     console.log("testAccPercent is ", testAccPercent.toFixed(1));
   }
@@ -193,6 +195,7 @@ export default class Fingerprint {
    * @param {tf.Model} model The model to be used for making the predictions.
    */
   async showPredictions(model) {
+    console.log("showPredictions begins.  ");
     // const testExamples = 100;
     // const examples = this.testData;
     // const examples = this.data.getTestData(testExamples);
@@ -201,17 +204,26 @@ export default class Fingerprint {
     tf.tidy(() => {
       // const output = model.predict(examples.xs);
       const output = model.predict(this.testData.xs);
-      console.log("output is ", output);
+      // console.log("output is ", output.dataSync());
       const axis = 1;
       const labels = Array.from(this.testData.labels.argMax(axis).dataSync());
-      console.log("tf.tidy labels is ", labels);
+      // const uids = labels.map(item => this.labelArray[item]);
+      console.log(
+        "true user_sn is ",
+        labels
+        // labels.map(item => this.labelArray[item])
+      );
       const predictions = Array.from(output.argMax(axis).dataSync());
-      console.log("tf.tidy predictions is ", predictions);
-      this.showTestResults(this.testData, predictions, labels);
+      console.log(
+        "predict user_sn is ",
+        predictions
+        // predictions.map(item => this.labelArray[item])
+      );
+      Fingerprint.showTestResults(this.testData, predictions, labels);
     });
   }
 
-  showTestResults(batch, predictions, labels) {
+  static showTestResults(batch, predictions, labels) {
     console.log("showTestResults begins. ");
     const testExamples = batch.xs.shape[0];
     console.log("testExamples is ", testExamples);
@@ -244,7 +256,7 @@ export default class Fingerprint {
   }
 
   static draw(image, canvas) {
-    const [width, height] = [16, 24];
+    const [width, height] = [HEIGH, WIDTH];
     canvas.width = width;
     canvas.height = height;
     const ctx = canvas.getContext("2d");
@@ -279,21 +291,26 @@ export default class Fingerprint {
     console.log("createConvModel begins. ");
     const model = tf.sequential();
     console.log("conv2d begins. ");
-    const conv1 = tf.layers.conv2d({
-      inputShape: [16, 24, 1],
+    const layer1 = tf.layers.conv2d({
+      inputShape: [HEIGH, WIDTH, 1], // 输入
       kernelSize: 3,
       filters: 16,
       activation: "relu"
     });
-    model.add(conv1);
+    model.add(layer1);
+    // 池化 Max pooling first.
     // model.add(tf.layers.maxPooling2d({ poolSize: 2, strides: 2 }));
     // Our third layer is another convolution, this time with 32 filters.
     model.add(
-      tf.layers.conv2d({ kernelSize: 3, filters: 32, activation: "relu" })
+      tf.layers.conv2d({
+        kernelSize: 3, // 大小
+        filters: 32, // 过滤器
+        activation: "relu" // 激活函数
+      })
     );
 
-    // // Max pooling again.
-    model.add(tf.layers.maxPooling2d({ poolSize: 2, strides: 2 }));
+    // Max pooling again.
+    // model.add(tf.layers.maxPooling2d({ poolSize: 2, strides: 2 }));
 
     // Add another conv2d layer.
     model.add(
@@ -302,21 +319,36 @@ export default class Fingerprint {
     console.log("flatten begins. ");
     model.add(tf.layers.flatten({}));
     console.log("relu begins. ");
-    model.add(tf.layers.dense({ units: 128, activation: "relu" }));
+    model.add(
+      // First layer must have an input shape defined.
+      tf.layers.dense({
+        units: 128, // 输出的维度
+        activation: "relu" // 激活函数
+      })
+    );
     console.log("softmax begins.");
-    model.add(tf.layers.dense({ units: 43, activation: "softmax" }));
+    model.add(
+      tf.layers.dense({
+        units: 43, // 输出的维度
+        activation: "softmax" // 分类算法
+      })
+    );
 
     return model;
   }
 
   static createDenseModel() {
+    console.log("createDenseModel begins.");
     const model = tf.sequential();
-    model.add(tf.layers.flatten({ inputShape: [16, 24, 1] }));
-    // model.add(tf.layers.dense({ units: 1155, activation: "relu" }));
-    // model.add(tf.layers.dense({ units: 55, activation: "relu" }));
-    model.add(tf.layers.dense({ units: 155, activation: "relu" }));
+    console.log("model add flatten.");
+    model.add(tf.layers.flatten({ inputShape: [HEIGH, WIDTH, 1] }));
+    console.log("model add relu. ");
+    model.add(tf.layers.dense({ units: 32, activation: "relu" }));
+    model.add(tf.layers.dense({ units: 64, activation: "relu" }));
+    model.add(tf.layers.dense({ units: 128, activation: "relu" }));
+    console.log("model add softmax. ");
     model.add(
-      tf.layers.dense({ units: this.labelSize, activation: "softmax" })
+      tf.layers.dense({ units: SIZE, activation: "softmax" })
     );
     return model;
   }

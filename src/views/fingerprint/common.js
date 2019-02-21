@@ -154,14 +154,14 @@ export function multiLayerPerceptronRegressionModel2Hidden() {
 /**
  * Describe the current linear weights for a human to read.
  *
- * @param {Array} kernel Array of floats of length 12.  One value per feature.
+ * @param {Array} kernel Array of floats of length 384.  One value per feature.
  * @returns {List} List of objects, each with a string feature name, and value
  *     feature weight.
  */
 export function describeKernelElements(kernel) {
   tf.util.assert(
-    kernel.length === 12,
-    `kernel must be a array of length 12, got ${kernel.length}`
+    kernel.length === 384,
+    `kernel must be a array of length 384, got ${kernel.length}`
   );
   const outList = [];
   for (let idx = 0; idx < kernel.length; idx++) {

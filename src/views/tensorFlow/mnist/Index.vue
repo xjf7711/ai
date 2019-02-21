@@ -68,7 +68,7 @@ import * as tfvis from "@tensorflow/tfjs-vis";
 // This is a helper class for loading and managing MNIST data specifically.
 // It is a useful example of how you could create your own data manager class
 // for arbitrary data though. It's worth a look :)
-import { IMAGE_H, IMAGE_W, MnistData } from "./MnistData";
+import { IMAGE_H, IMAGE_W, MnistData } from "./data";
 const lossValues = [[], []];
 const accuracyValues = [[], []];
 export default {

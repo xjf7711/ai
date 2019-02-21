@@ -96,10 +96,16 @@ export default new Router({
           component: () => import("./views/tensorFlow/boston-housing/Index.vue")
         },
         {
+          path: "cart-pole",
+          name: "cartPole",
+          meta: { title: "cartPole" },
+          component: () => import("./views/tensorFlow/cart-pole/Index.vue")
+        },
+        {
           path: "mnist",
           name: "mnist",
           meta: { title: "Mnist" },
-          component: () => import("./views/tensorFlow/Mnist")
+          component: () => import("./views/tensorFlow/mnist/Index.vue")
         },
         {
           path: "mobile-net",

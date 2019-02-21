@@ -1,25 +1,5 @@
 <template>
     <div class='tfjs-example-container centered-container'>
-        <section class='title-area'>
-            <h1>Multivariate Regression</h1>
-            <p class='subtitle'>Compare different models for housing price prediction.</p>
-        </section>
-
-        <section>
-            <p class='section-head'>Description</p>
-            <p>
-                This example shows you how to perform regression with more than one input feature using the
-                <a href="https://www.cs.toronto.edu/~delve/data/boston/bostonDetail.html">Boston Housing Dataset</a>,
-                which is a famous dataset derived from information collected by the U.S. Census Service concerning housing
-                in the area of Boston Massachusetts.
-            </p>
-            <p>
-                It allows you to compare the perfomance of 3 different models for predicting the house prices. When training
-                the linear model, it will also display the largest 5 weights (by absolute value) of the model and
-                the feature associated with each of those weights.
-            </p>
-        </section>
-
         <section>
             <p class='section-head'>Status</p>
             <p id="status">Loading data...</p>
@@ -60,6 +40,8 @@
 </template>
 
 <script>
+// 这是一个分类问题使用线性回归的算法的反例。
+// 结果很奇怪。
 // import { BostonHousingDataset, featureDescriptions } from "./data";
 import {
   run,
