@@ -5,8 +5,8 @@ import { fingerprints as trainData } from "./train.js";
 import { fingerprints as testData } from "./test.js";
 import { strToHexToArray } from "../../assets/js/parseNumber";
 
-const HEIGH = 16;
-const WIDTH = 16;
+const HEIGH = 12;
+const WIDTH = 12;
 const SIZE = 43;
 const lossValues = [[], []];
 const accuracyValues = [[], []];
@@ -61,7 +61,7 @@ export default class Fingerprint {
     fingerprints.forEach(item => {
       // console.log("fingerprints begins.");
       // console.log(index, "index ");
-      const feature = strToHexToArray(item.features.substr(0,HEIGH*WIDTH));
+      const feature = strToHexToArray(item.features.substr(0, HEIGH * WIDTH));
       xs.push(feature);
       const uid = parseInt(item.user_sn);
       // // console.log("uid is ",typeof uid);
@@ -103,7 +103,7 @@ export default class Fingerprint {
       loadingType: "spinner",
       message: "Training model..."
     });
-    const optimizer = "rmsprop";
+    const optimizer = "rmsprop"; // GD，SGD，Adam, Momentum,RMSProp
     console.log("model.compile begins . ");
     model.compile({
       optimizer,
@@ -115,7 +115,9 @@ export default class Fingerprint {
 
     // Leave out the last 15% of the training data for validation, to monitor
     // overfitting during training.
-    const validationSplit = 0.15;
+    // 改为0.25后效果变差了？？？
+    // 改为0.08后效果变好了？？？
+    const validationSplit = 0.08;
 
     let trainBatchCount = 0;
 
@@ -294,23 +296,29 @@ export default class Fingerprint {
     const layer1 = tf.layers.conv2d({
       inputShape: [HEIGH, WIDTH, 1], // 输入
       kernelSize: 3,
-      filters: 16,
+      filters: 32,
+      padding: "same",
       activation: "relu"
     });
     model.add(layer1);
     // 池化 Max pooling first.
-    // model.add(tf.layers.maxPooling2d({ poolSize: 2, strides: 2 }));
+    model.add(
+      tf.layers.maxPooling2d({ poolSize: 2, strides: 2, padding: "same" })
+    );
     // Our third layer is another convolution, this time with 32 filters.
     model.add(
       tf.layers.conv2d({
         kernelSize: 3, // 大小
-        filters: 32, // 过滤器
+        filters: 64, // 过滤器
+        padding: "same",
         activation: "relu" // 激活函数
       })
     );
 
     // Max pooling again.
-    // model.add(tf.layers.maxPooling2d({ poolSize: 2, strides: 2 }));
+    model.add(
+      tf.layers.maxPooling2d({ poolSize: 2, strides: 2, padding: "same" })
+    );
 
     // Add another conv2d layer.
     model.add(
@@ -347,9 +355,7 @@ export default class Fingerprint {
     model.add(tf.layers.dense({ units: 64, activation: "relu" }));
     model.add(tf.layers.dense({ units: 128, activation: "relu" }));
     console.log("model add softmax. ");
-    model.add(
-      tf.layers.dense({ units: SIZE, activation: "softmax" })
-    );
+    model.add(tf.layers.dense({ units: SIZE, activation: "softmax" }));
     return model;
   }
 
