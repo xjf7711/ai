@@ -103,7 +103,7 @@ export default class Fingerprint {
       loadingType: "spinner",
       message: "Training model..."
     });
-    const optimizer = "rmsprop"; // GD，SGD，Adam, Momentum,RMSProp
+    const optimizer = "adam"; // GD，SGD，Adam, Momentum,RMSProp rmsprop改为adam后明显改善 50次能全对
     console.log("model.compile begins . ");
     model.compile({
       optimizer,

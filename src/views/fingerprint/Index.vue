@@ -48,7 +48,7 @@ export default {
     return {
       isDisabled: false,
       modelType: "ConvNet", // DenseNet,ConvNet
-      trainEpochs: 100,
+      trainEpochs: 50,
       fingerprint: null
     };
   },
