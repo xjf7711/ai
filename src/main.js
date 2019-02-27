@@ -18,11 +18,11 @@ import "./assets/icons/index.js";
 // 因为vConsole并不需要调用，
 // 所以前面加“eslint-disable no-unused-vars”规避掉eslint语法检查
 /* eslint-disable no-unused-vars */
-// import VConsole from "vconsole";
-// // 打包后使用。
-// if (process.env.NODE_ENV === "production") {
-//   new VConsole();
-// }
+import VConsole from "vconsole";
+// 打包后使用。
+if (process.env.NODE_ENV === "production") {
+  new VConsole();
+}
 
 Vue.config.productionTip = false;
 

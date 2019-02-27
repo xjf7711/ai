@@ -17,6 +17,8 @@ export default class Fingerprint {
     this.trainEpochs = trainEpochs;
     // this.featureLength = 256;
     this.labels = {};
+    // 0.1有问题， 0.001时，50次循环能达到100%。
+    this.learningRate = 0.001;
     // lossLabel: null,
     // accuracyLabel: null,
     //   trainData: {},
@@ -46,12 +48,14 @@ export default class Fingerprint {
     this.labelArray = Array.from(labelSet);
     console.log("labelArray is ", this.labelArray);
     this.labelArray.forEach((item, index) => {
-      const label = new Array(SIZE).fill(0, 0, SIZE);
+      // const label = new Array(SIZE).fill(0, 0, SIZE);
+      // const label = Array.from(tf.oneHot([index], 43).dataSync());
+      // console.log(Array.from(tf.oneHot([item], 43).dataSync()));
       // const label = tf.oneHot(item, SIZE);
       // console.log("tf.oneHot ", tf.oneHot(item, SIZE).dataSync());
-      label[index] = 1;
+      // label[index] = 1;
       // console.log("label is ", label.dataSync());
-      this.labels[item] = label;
+      this.labels[item] = Array.from(tf.oneHot([index], SIZE).dataSync());
     });
     console.log("this.labels is ", this.labels);
   }
@@ -64,7 +68,7 @@ export default class Fingerprint {
       const feature = strToHexToArray(item.features.substr(0, HEIGH * WIDTH));
       xs.push(feature);
       const uid = parseInt(item.user_sn);
-      // // console.log("uid is ",typeof uid);
+      // console.log("uid is ",typeof uid);
       const label = this.labels[uid];
       // console.log("loadData label is ", label);
       labels.push(label);
@@ -80,7 +84,6 @@ export default class Fingerprint {
   }
   async handlerTrain() {
     console.log("handlerTrain begins.");
-    // this.isDisabled = true;
     Toast("Creating model...");
     const model = this.createModel();
     model.summary();
@@ -103,7 +106,8 @@ export default class Fingerprint {
       loadingType: "spinner",
       message: "Training model..."
     });
-    const optimizer = "adam"; // GD，SGD，Adam, Momentum,RMSProp rmsprop改为adam后明显改善 50次能全对
+    // GD，SGD，Adam, Momentum,RMSProp rmsprop改为adam后明显改善 50次能全对
+    const optimizer = tf.train.adam(this.learningRate);
     console.log("model.compile begins . ");
     model.compile({
       optimizer,
@@ -111,13 +115,14 @@ export default class Fingerprint {
       metrics: ["accuracy"]
     });
 
-    const batchSize = 50;
+    // mnist中为320.
+    const batchSize = 80;
 
     // Leave out the last 15% of the training data for validation, to monitor
     // overfitting during training.
     // 改为0.25后效果变差了？？？
     // 改为0.08后效果变好了？？？
-    const validationSplit = 0.08;
+    const validationSplit = 0.15;
 
     let trainBatchCount = 0;
 
@@ -174,7 +179,6 @@ export default class Fingerprint {
       }
     });
     model.save("indexeddb://fingerprints");
-    this.isDisabled = false;
     console.log("testResult begins. ");
     const testResult = model.evaluate(this.testData.xs, this.testData.labels);
     // const testResult = model.evaluate(testData.xs, testData.labels);
@@ -301,36 +305,45 @@ export default class Fingerprint {
       activation: "relu"
     });
     model.add(layer1);
-    // 池化 Max pooling first.
-    model.add(
-      tf.layers.maxPooling2d({ poolSize: 2, strides: 2, padding: "same" })
-    );
+    // 不需要多层神经网络，因为特征值本身就是处理过的。
+    // // 池化 Max pooling first. 池化后效果更好??。
+    // model.add(
+    //   tf.layers.maxPooling2d({ poolSize: 2, strides: 2, padding: "same" })
+    // );
     // Our third layer is another convolution, this time with 32 filters.
-    model.add(
-      tf.layers.conv2d({
-        kernelSize: 3, // 大小
-        filters: 64, // 过滤器
-        padding: "same",
-        activation: "relu" // 激活函数
-      })
-    );
-
-    // Max pooling again.
-    model.add(
-      tf.layers.maxPooling2d({ poolSize: 2, strides: 2, padding: "same" })
-    );
-
+    // model.add(
+    //   tf.layers.conv2d({
+    //     kernelSize: 3, // 大小
+    //     filters: 32, // 过滤器
+    //     padding: "same",
+    //     activation: "relu" // 激活函数
+    //   })
+    // );
+    //
     // Add another conv2d layer.
-    model.add(
-      tf.layers.conv2d({ kernelSize: 3, filters: 64, activation: "relu" })
-    );
+    // model.add(
+    //   tf.layers.conv2d({
+    //     kernelSize: 3,
+    //     filters: 64,
+    //     activation: "relu",
+    //     padding: "same"
+    //   })
+    // );
+    // // Max pooling again.
+    // model.add(
+    //   tf.layers.maxPooling2d({ poolSize: 2, strides: 2, padding: "same" })
+    // );
+    // Add dropout first rate是指排除的比例
+    // model.add(tf.layers.dropout({ rate: 0.1 }));
     console.log("flatten begins. ");
-    model.add(tf.layers.flatten({}));
+    model.add(tf.layers.flatten());
+    // Add dropout again.
+    model.add(tf.layers.dropout({ rate: 0.25 }));
     console.log("relu begins. ");
     model.add(
       // First layer must have an input shape defined.
       tf.layers.dense({
-        units: 128, // 输出的维度
+        units: 128, // 输出的维度 128时epochs为60结果100%；64时，epochs为80结果为100%。
         activation: "relu" // 激活函数
       })
     );

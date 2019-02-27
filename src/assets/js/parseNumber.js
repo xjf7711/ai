@@ -9,10 +9,13 @@ export function strToHexToArray(str) {
   //   }
   // }
   const arr = Array.from(str);
-  arr.forEach((item, index) => {
-    arr[index] = parseInt(item, 16);
+  // arr.forEach((item, index) => {
+  //   arr[index] = parseInt(item, 16);
+  // });
+  // return arr;
+  return arr.map(item => {
+    return parseInt(item, 16);
   });
-  return arr;
 }
 // 字符串转16进制
 export function stringToHex(str) {

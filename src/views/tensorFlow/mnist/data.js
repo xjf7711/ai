@@ -84,7 +84,7 @@ export class MnistData {
         await Promise.all([imgRequest, labelsRequest]);
 
     this.datasetLabels = new Uint8Array(await labelsResponse.arrayBuffer());
-
+    console.log("this.datasetLabels is ", this.datasetLabels);
     // Slice the the images and labels into train and test sets.
     this.trainImages =
         this.datasetImages.slice(0, IMAGE_SIZE * NUM_TRAIN_ELEMENTS);
@@ -93,6 +93,7 @@ export class MnistData {
         this.datasetLabels.slice(0, NUM_CLASSES * NUM_TRAIN_ELEMENTS);
     this.testLabels =
         this.datasetLabels.slice(NUM_CLASSES * NUM_TRAIN_ELEMENTS);
+    console.log("this.testLabels is ", this.testLabels);
   }
 
   /**

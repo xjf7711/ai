@@ -15,10 +15,10 @@
  * =============================================================================
  */
 
-import * as tf from '@tensorflow/tfjs';
+import * as tf from "@tensorflow/tfjs";
 
 // Hyperparameters.
-const LEARNING_RATE = .1;
+const LEARNING_RATE = 0.1;
 const BATCH_SIZE = 64;
 const TRAIN_STEPS = 100;
 
@@ -29,17 +29,23 @@ const optimizer = tf.train.sgd(LEARNING_RATE);
 
 // Variables that we want to optimize
 const conv1OutputDepth = 8;
-const conv1Weights =
-    tf.variable(tf.randomNormal([5, 5, 1, conv1OutputDepth], 0, 0.1));
+const conv1Weights = tf.variable(
+  tf.randomNormal([5, 5, 1, conv1OutputDepth], 0, 0.1)
+);
 
 const conv2InputDepth = conv1OutputDepth;
 const conv2OutputDepth = 16;
 const conv2Weights = tf.variable(
-    tf.randomNormal([5, 5, conv2InputDepth, conv2OutputDepth], 0, 0.1));
+  tf.randomNormal([5, 5, conv2InputDepth, conv2OutputDepth], 0, 0.1)
+);
 
-const fullyConnectedWeights = tf.variable(tf.randomNormal(
-    [7 * 7 * conv2OutputDepth, LABELS_SIZE], 0,
-    1 / Math.sqrt(7 * 7 * conv2OutputDepth)));
+const fullyConnectedWeights = tf.variable(
+  tf.randomNormal(
+    [7 * 7 * conv2OutputDepth, LABELS_SIZE],
+    0,
+    1 / Math.sqrt(7 * 7 * conv2OutputDepth)
+  )
+);
 const fullyConnectedBias = tf.variable(tf.zeros([LABELS_SIZE]));
 
 // Loss function
@@ -56,22 +62,25 @@ function model(inputXs) {
 
   // Conv 1
   const layer1 = tf.tidy(() => {
-    return xs.conv2d(conv1Weights, 1, 'same')
-        .relu()
-        .maxPool([2, 2], strides, pad);
+    return xs
+      .conv2d(conv1Weights, 1, "same")
+      .relu()
+      .maxPool([2, 2], strides, pad);
   });
 
   // Conv 2
   const layer2 = tf.tidy(() => {
-    return layer1.conv2d(conv2Weights, 1, 'same')
-        .relu()
-        .maxPool([2, 2], strides, pad);
+    return layer1
+      .conv2d(conv2Weights, 1, "same")
+      .relu()
+      .maxPool([2, 2], strides, pad);
   });
 
   // Final layer
-  return layer2.as2D(-1, fullyConnectedWeights.shape[0])
-      .matMul(fullyConnectedWeights)
-      .add(fullyConnectedBias);
+  return layer2
+    .as2D(-1, fullyConnectedWeights.shape[0])
+    .matMul(fullyConnectedWeights)
+    .add(fullyConnectedBias);
 }
 
 // Train the model.

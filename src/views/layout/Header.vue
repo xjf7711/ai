@@ -74,8 +74,10 @@ export default {
 <style lang="scss" scoped>
 .van-nav-bar {
   background-color: #26a2ff;
-  color: #ffffff;
   /*height: 40px;*/
+}
+.van-nav-bar__title {
+  color: #ffffff;
 }
 /*.icon {*/
 /*font-size: 1em;*/
