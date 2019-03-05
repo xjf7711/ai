@@ -1,16 +1,21 @@
 <template>
     <div>
         <div id="info" style="display:none"></div>
-        <div id="loading">
+        <div id="loading" v-if="isShow">
             Loading the model...
         </div>
-
-        <div id="main" style="display:none">
-            <video id="video" playsinline="" class="video"></video>
-            <canvas id="output"></canvas>
-
+        <div id='main' style='display:none'>
+            <video id="video" playsinline style=" -moz-transform: scaleX(-1);
+        -o-transform: scaleX(-1);
+        -webkit-transform: scaleX(-1);
+        transform: scaleX(-1);
+        display: none;
+        ">
+            </video>
+            <canvas id="output" />
         </div>
-        <img id='cat' ref="cat" src='./cat.jpg' width="100%">
+
+        <img id='cat' ref="cat" src='./onewoman.jpeg' width="100%">
         <!--<img alt="Vue logo" src="../../assets/logo.png">-->
         <div class="footer">
             <div class="footer-text">
@@ -32,6 +37,7 @@ export default {
   data() {
     return {
       // imgUrl: BASE_URL + "cat.jpg"
+      isShow: false
     };
   },
   mounted() {
@@ -43,11 +49,13 @@ export default {
   },
   methods: {
     async estimatePoseOnImage(imageElement) {
+      this.isShow = true;
       const imageScaleFactor = 0.5;
       const outputStride = 16;
       const flipHorizontal = false;
       // load the posenet model from a checkpoint
       const net = await posenet.load();
+      this.isShow = false;
       return await net.estimateSinglePose(
         imageElement,
         imageScaleFactor,

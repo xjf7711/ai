@@ -22,9 +22,10 @@
 </template>
 
 <script>
+import * as tf from "@tensorflow/tfjs";
 // import { BostonHousingDataset, featureDescriptions } from "./data";
 import { Toast } from "vant";
-import { strToHexToArray } from "../../assets/js/parseNumber";
+// import { strToHexToArray } from "../../assets/js/parseNumber";
 import { fingerprints } from "./train.js";
 import { fingerprints as testData } from "./test.js";
 import {
@@ -82,8 +83,63 @@ export default {
   },
   methods: {
     async trainSimpleLinearRegression() {
-      const model = linearRegressionModel();
-      await run(model, "linear", true);
+      const model = tf.sequential();
+      model.add(tf.layers.dense({ inputShape: [-1, 144], units: 1 }));
+
+      model.summary();
+      model.compile({
+        optimizer: tf.train.sgd(0.0001),
+        loss: "meanSquaredError"
+      });
+      Toast("Starting training process...");
+      // ui.updateStatus("Starting training process...");
+      await model.fit(tensors.trainFeatures, tensors.trainTarget, {
+        batchSize: BATCH_SIZE,
+        epochs: NUM_EPOCHS,
+        validationSplit: 0.2,
+        callbacks: {
+          onEpochEnd: async (epoch, logs) => {
+            Toast.loading({
+              duration: 0,
+              message: `Epoch ${epoch + 1} of ${NUM_EPOCHS} completed.`
+            });
+            trainLogs.push(logs);
+            tfvis.show.history(container, trainLogs, ["loss", "val_loss"]);
+
+            if (weightsIllustration) {
+              model.layers[0]
+                .getWeights()[0]
+                .data()
+                .then(kernelAsArr => {
+                  const weightsList = describeKernelElements(kernelAsArr);
+                  // ui.updateWeightDescription(weightsList);
+                  console.log(weightsList);
+                });
+            }
+          }
+        }
+      });
+
+      // ui.updateStatus("Running on test data...");
+      const result = model.evaluate(tensors.testFeatures, tensors.testTarget, {
+        batchSize: BATCH_SIZE
+      });
+      const testLoss = result.dataSync()[0];
+
+      const trainLoss = trainLogs[trainLogs.length - 1].loss;
+      const valLoss = trainLogs[trainLogs.length - 1].val_loss;
+      // await ui.updateModelStatus(
+      //   `Final train-set loss: ${trainLoss.toFixed(4)}\n` +
+      //     `Final validation-set loss: ${valLoss.toFixed(4)}\n` +
+      //     `Test-set loss: ${testLoss.toFixed(4)}`,
+      //   modelName
+      // );
+      Toast.success({
+        message:
+          `Final train-set loss: ${trainLoss.toFixed(4)}\n` +
+          `Final validation-set loss: ${valLoss.toFixed(4)}\n` +
+          `Test-set loss: ${testLoss.toFixed(4)}`
+      });
     }
   }
 };

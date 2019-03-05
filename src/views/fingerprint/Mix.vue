@@ -56,14 +56,14 @@ export default {
     console.log("fingerprint mix created begins. ");
   },
   mounted() {
-    this.fingerprint = new Fingerprint(this.modelType, this.trainEpochs);
-    this.fingerprint.start();
+    this.fingerprint = new Fingerprint();
+    this.fingerprint.init(this.modelType, this.trainEpochs);
   },
   methods: {
     async handlerTrain() {
       console.log("handlerTrain begins.");
-      this.fingerprint = new Fingerprint(this.modelType, this.trainEpochs);
-      this.fingerprint.start();
+      // this.fingerprint = new Fingerprint();
+      this.fingerprint.init(this.modelType, this.trainEpochs);
       this.isDisabled = true;
       await this.fingerprint.handlerTrain();
       this.isDisabled = false;

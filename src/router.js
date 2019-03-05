@@ -67,6 +67,62 @@ export const routeMap = [
     ]
   },
   {
+    path: "/expertSystem",
+    name: "expertSystem",
+    meta: { title: "expertSystem" },
+    component: Layout,
+    children: [
+      {
+        path: "index",
+        name: "ExpertSystemIndex",
+        meta: { title: "ExpertSystem" },
+        component: () => import("src/views/expertSystem/Index.vue")
+      }
+    ]
+  },
+  {
+    path: "/cocoSsd",
+    name: "cocoSsd",
+    meta: { title: "姿势分析" },
+    component: Layout,
+    // component: () => import("src/views/tensorFlow/posenet/PoseNet"),
+    children: [
+      {
+        path: "index",
+        name: "cocoSsdIndex",
+        meta: { title: "coco" },
+        component: () => import("src/views/coco-ssd/Index.vue")
+      },
+      {
+        path: "test",
+        name: "cocoSsdTest",
+        meta: { title: "coco test" },
+        component: () => import("src/views/coco-ssd/TestInline.vue")
+      }
+    ]
+  },
+  {
+    path: "/poseNet",
+    name: "poseNet",
+    meta: { title: "姿势分析" },
+    component: Layout,
+    // component: () => import("src/views/tensorFlow/posenet/PoseNet"),
+    children: [
+      {
+        path: "coco",
+        name: "coco",
+        meta: { title: "coco" },
+        component: () => import("src/views/tensorFlow/posenet/Coco.vue")
+      },
+      {
+        path: "camera",
+        name: "camera",
+        meta: { title: "camera" },
+        component: () => import("src/views/tensorFlow/posenet/Camera.vue")
+      }
+    ]
+  },
+  {
     path: "/tensorFlow",
     name: "tensorFlow",
     meta: { title: "tensorFlow" },
@@ -131,12 +187,6 @@ export const routeMap = [
         name: "fittingCurve",
         meta: { title: "曲线拟合" },
         component: () => import("src/views/tensorFlow/FittingCurve")
-      },
-      {
-        path: "poseNet",
-        name: "poseNet",
-        meta: { title: "姿势分析" },
-        component: () => import("src/views/tensorFlow/PoseNet")
       },
       {
         path: "guide",

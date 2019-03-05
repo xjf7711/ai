@@ -12,9 +12,7 @@ const lossValues = [[], []];
 const accuracyValues = [[], []];
 
 export default class Fingerprint {
-  constructor(modelType, trainEpochs) {
-    this.modelType = modelType; // DenseNet,ConvNet
-    this.trainEpochs = trainEpochs;
+  constructor() {
     // this.featureLength = 256;
     this.labels = {};
     // 0.1有问题， 0.001时，50次循环能达到100%。
@@ -26,10 +24,12 @@ export default class Fingerprint {
     // examples: {},
     // labels: [],
   }
-  start() {
+  init(modelType, trainEpochs) {
+    this.modelType = modelType; // DenseNet,ConvNet
+    this.trainEpochs = trainEpochs;
     this.formatLabels(trainData);
     this.trainData = this.loadData(trainData);
-    console.log("trainData is ", this.trainData);
+    // console.log("trainData is ", this.trainData);
     this.testData = this.loadData(testData);
   }
   /**
@@ -46,7 +46,7 @@ export default class Fingerprint {
     const labelSet = new Set(labels);
     console.log("labelSet is ", labelSet);
     this.labelArray = Array.from(labelSet);
-    console.log("labelArray is ", this.labelArray);
+    // console.log("labelArray is ", this.labelArray);
     this.labelArray.forEach((item, index) => {
       // const label = new Array(SIZE).fill(0, 0, SIZE);
       // const label = Array.from(tf.oneHot([index], 43).dataSync());
@@ -57,7 +57,7 @@ export default class Fingerprint {
       // console.log("label is ", label.dataSync());
       this.labels[item] = Array.from(tf.oneHot([index], SIZE).dataSync());
     });
-    console.log("this.labels is ", this.labels);
+    // console.log("this.labels is ", this.labels);
   }
   loadData(fingerprints) {
     const xs = [];
@@ -73,8 +73,8 @@ export default class Fingerprint {
       // console.log("loadData label is ", label);
       labels.push(label);
     });
-    console.log("xs is ", xs);
-    console.log("loadData labels is ", labels);
+    // console.log("xs is ", xs);
+    // console.log("loadData labels is ", labels);
     // console.log("tf.tensor2d(xs).reshape([-1, HEIGH, WIDTH, 1]) is ", tf.tensor2d(xs).reshape([-1, HEIGH, WIDTH, 1]).dataSync());
     // const xsReshape = tf.tensor(xs).reshape([-1, HEIGH, WIDTH, 1]);
     return {
@@ -221,7 +221,7 @@ export default class Fingerprint {
       );
       const predictions = Array.from(output.argMax(axis).dataSync());
       console.log(
-        "predict user_sn is ",
+        "predict is ",
         predictions
         // predictions.map(item => this.labelArray[item])
       );
@@ -300,16 +300,16 @@ export default class Fingerprint {
     const layer1 = tf.layers.conv2d({
       inputShape: [HEIGH, WIDTH, 1], // 输入
       kernelSize: 3,
-      filters: 32,
+      filters: 128,
       padding: "same",
       activation: "relu"
     });
     model.add(layer1);
     // 不需要多层神经网络，因为特征值本身就是处理过的。
-    // // 池化 Max pooling first. 池化后效果更好??。
-    // model.add(
-    //   tf.layers.maxPooling2d({ poolSize: 2, strides: 2, padding: "same" })
-    // );
+    // 池化 Max pooling first. 池化后效果更好??。
+    model.add(
+      tf.layers.maxPooling2d({ poolSize: 2, strides: 2, padding: "same" })
+    );
     // Our third layer is another convolution, this time with 32 filters.
     // model.add(
     //   tf.layers.conv2d({
@@ -343,14 +343,14 @@ export default class Fingerprint {
     model.add(
       // First layer must have an input shape defined.
       tf.layers.dense({
-        units: 128, // 输出的维度 128时epochs为60结果100%；64时，epochs为80结果为100%。
+        units: 256, // 输出的维度 128时epochs为60结果100%；64时，epochs为80结果为100%。
         activation: "relu" // 激活函数
       })
     );
     console.log("softmax begins.");
     model.add(
       tf.layers.dense({
-        units: 43, // 输出的维度
+        units: SIZE, // 输出的维度
         activation: "softmax" // 分类算法
       })
     );
@@ -364,9 +364,12 @@ export default class Fingerprint {
     console.log("model add flatten.");
     model.add(tf.layers.flatten({ inputShape: [HEIGH, WIDTH, 1] }));
     console.log("model add relu. ");
-    model.add(tf.layers.dense({ units: 32, activation: "relu" }));
-    model.add(tf.layers.dense({ units: 64, activation: "relu" }));
-    model.add(tf.layers.dense({ units: 128, activation: "relu" }));
+    // model.add(tf.layers.dense({ units: 32, activation: "relu" }));
+    // model.add(tf.layers.dense({ units: 64, activation: "relu" }));
+    // model.add(tf.layers.dense({ units: 128, activation: "relu" }));
+    model.add(tf.layers.dense({ units: 256, activation: "relu" }));
+    model.add(tf.layers.dense({ units: 512, activation: "relu" }));
+    // model.add(tf.layers.dense({ units: 1024, activation: "relu" }));
     console.log("model add softmax. ");
     model.add(tf.layers.dense({ units: SIZE, activation: "softmax" }));
     return model;
