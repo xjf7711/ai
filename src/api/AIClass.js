@@ -3,7 +3,7 @@
  * */
 
 import qs from "qs";
-import fetch from "../assets/js/fetch";
+import fetch from "assets/js/service";
 
 export default class AIClass {
   constructor() {
